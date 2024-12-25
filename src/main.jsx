@@ -1,23 +1,38 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import NavBar from './assets/navbar'
-import Control from './assets/controlbar'
-import Users from './assets/users'
-import Chat from './assets/chat'
+import ChatPage from './chatPage'
+import { createBrowserRouter, RouterProvider } from 'react-router'  
+import ErrorMsg from './errorPage'
+import Login from './loginPage'
+import ChatPageWrapper from './chatWrapper'
+
+const router=createBrowserRouter([
+  {
+    path:'/message/:user',
+    element:<ChatPageWrapper/>,  
+    errorElement:<ErrorMsg />
+  },
+  {
+    path:'/message',
+    element:<ChatPage/>,
+    errorElement:<ErrorMsg/>
+  },
+  
+  {
+    path:'/login',
+    element:<Login value={1}/>,
+    errorElement:<ErrorMsg/>
+  },
+  {
+    path:'/register',
+    element:<Login value={2}/>,
+    errorElement:<ErrorMsg/>
+  }
+], { debug: true })
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    {/* <NavBar/> */}
-    <div style={{display:'grid',gridTemplateColumns:'5% 95%'}}>
-      <Control/>
-      <div>
-        {/* <NavBar/> */}
-        
-            <Users/>
-            {/* <Chat/> */}
-      </div>
-    </div>
-      
-  </StrictMode>,
+    <RouterProvider router={router}></RouterProvider> 
+  </StrictMode>
 )

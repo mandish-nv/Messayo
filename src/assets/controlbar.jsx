@@ -10,8 +10,8 @@ import logo from './logo.jpeg'
 
 import { useState } from 'react';
 
-export default function Control() {
-    const [val, setVal] = useState(0)
+export default function Control({value}) {
+    const [val, setVal] = useState(value)
     return (
         <div className="side-bar">
             <div style={{ display: 'grid', gap: '1.5rem', justifyContent: 'center', textAlign: 'center',paddingTop:'1rem' }}>
