@@ -9,6 +9,17 @@ const URL='mongodb://localhost:27017/Dokoto'
 app.use(express.json())
 app.use(cors())
 
+const registerSchema=mongoose.Schema({
+  user:{
+    type:String,
+    required:true
+  },
+  status:{
+    type:String,
+    required:true
+  }
+})
+
 mongoose.connect(URL)
     .then(()=>{
         app.get('/',(req,res)=>{
@@ -47,6 +58,7 @@ mongoose.connect(URL)
                 }
                 else{
                   await user.save();
+                  mongoose.model(req.body.userName,registerSchema)
                   res.send("Data submitted successfully!");
                 }
               } catch (error) {
@@ -81,7 +93,18 @@ mongoose.connect(URL)
               }
             });
 
-        app.listen(5000)
+
+        // app.post('/insertuser',async(req,res)=>{
+        //   try{
+        //     const newdata=new mongoose.model('hilubabz',registerSchema)(req.body)
+        //     await newdata.save()
+        //   }
+        //   catch(e){
+        //     console.log(e)
+        //   }
+        // })
+
+        app.listen(5000,()=>{console.log('Server Connected')})
     })
     .catch(err=>console.log(err))
 

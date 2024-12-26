@@ -25,6 +25,7 @@ export default function Login({value}){
         const res=await axios.post('http://localhost:5000/login',loginInfo)
         setError(res.data)
         setLoginInfo({})
+        setVal(3)
     }
     return(
         <div className="login">

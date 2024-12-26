@@ -7,6 +7,10 @@ import ErrorMsg from './errorPage'
 import Login from './loginPage'
 import ChatPageWrapper from './chatWrapper'
 
+// localStorage.setItem("user", JSON.stringify({ name: "John", age: 30 }));
+// const user = JSON.parse(localStorage.getItem("user"));
+
+
 const router=createBrowserRouter([
   {
     path:'/message/:user',
