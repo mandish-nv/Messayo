@@ -16,17 +16,15 @@ export default function Message({ user,setUser, msg, friendData,setMsg}) {
         <div className='user-scroll'>
             <div className='user-block'>
                 {friendData.map((val, index) =>{
-                    // const userMessages = msg.filter(message => message.user !== val);
-                    // const latestMessage = userMessages[userMessages.length - 1]?.message|| "Tap to chat";
-                    // const getLatestMessageTime = (messages) => {
-                    //     if (!messages || messages.length === 0) return 'error';
-                    //     const latestMessage = messages[messages.length - 1];
-                    const latestMessage='hello'
-                    //     return formatTime(latestMessage?.createdAt) || '';
-                    //   };
+                    const userMessages = msg.filter(message => (message.receiverId === val._id||message.senderId===val._id));
+                    const latestMessage = userMessages[userMessages.length - 1]?.message|| "Tap to chat";
+                    const getLatestMessageTime = (messages) => {
+                        if (!messages || messages.length === 0) return 'error';
+                        const latestMessage = messages[messages.length - 1];
+                        return formatTime(latestMessage?.createdAt) || '';
+                      };
                       
-                    //   const latestMessageTime = getLatestMessageTime(userMessages);
-                    const latestMessageTime='11:11'
+                      const latestMessageTime = getLatestMessageTime(userMessages);
                     return(
                     <Link key={index} to={`/message/${val._id}`}>
                     <div className='users' onClick={() => {setUser(val);} }>
