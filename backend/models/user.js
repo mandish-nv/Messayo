@@ -28,6 +28,11 @@ const userSchema =new mongoose.Schema({
   profilePicture:{
     type:String,
     required:true
+  },
+  friends:{
+    type:Array,
+    default:[],
+    required:false
   }
 }, {timestamps: true})
 

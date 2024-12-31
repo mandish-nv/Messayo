@@ -11,12 +11,23 @@ import logo from './logo.jpeg'
 import { useState } from 'react';
 
 export default function Control({value}) {
+    const userInfo=JSON.parse(localStorage.getItem('login'))||JSON.parse(sessionStorage.getItem('login'))||'not-logged-in'
+    // console.log(userInfo)
     const [val, setVal] = useState(value)
+
+    const exit=()=>{
+        setVal(6)
+        localStorage.removeItem('login')||sessionStorage.removeItem('login')
+        
+    }
+
     return (
         <div className="side-bar">
             <div style={{ display: 'grid', gap: '1.5rem', justifyContent: 'center', textAlign: 'center',paddingTop:'1rem' }}>
             <img src={logo} className='logo'></img>
-                <div className="circle"></div>
+                <div className="circle" style={{display:userInfo==='not-logged-in'?'none':''}}>
+                    <img src={userInfo==='not-logged-in'?'':userInfo.profilePicture}></img>
+                </div>
 
                 <div
                     className={`icon ${val === 1 ? 'active' : ''}`}
@@ -53,7 +64,7 @@ export default function Control({value}) {
                 </div>
                 <div
                     className={`icon ${val === 6 ? 'active' : ''}`}
-                    onClick={() => setVal(6)}
+                    onClick={() => exit()}
                 >
                     <IoExitOutline />
                 </div>

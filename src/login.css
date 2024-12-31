@@ -48,13 +48,26 @@
     position:absolute;
     transition: all 0.7s ease-in-out;
     left: 0;
+    z-index:2;
 }   
 .dokoto.move-right {
     left: 50vw; 
 }
 
 .dokoto.center{
-    
+    left: 26vw;
+}
+
+.register-successful{
+    font-size: 2rem;
+    color: white;
+}
+
+
+.login-button{
+    background-color: white;
+    padding:0.5rem 2rem;
+    border-radius: 1rem;
 }
 
 .form-signup{
