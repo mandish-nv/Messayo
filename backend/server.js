@@ -100,11 +100,11 @@ mongoose
       res.send(user.friends);//friendlist pathaune euta user ko
     });
 
-    // app.post("/find", async (req, res) => {//testing purpose
-    //   const userName = req.body.userName;
-    //   const userData = await User.findOne({ userName: userName });
-    //   res.send(userData);
-    // });
+    app.post("/find", async (req, res) => {//login pachi userdata tanne
+      const userName = req.body.userName;
+      const userData = await User.findOne({ userName: userName });
+      res.send(userData);
+    });
 
 
     app.post("/addFriend", async (req, res) => {//testing purpose

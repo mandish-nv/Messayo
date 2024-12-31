@@ -231,3 +231,8 @@ input{
   align-items: center;
   justify-content: center;
 }
+
+.username{
+  font-size: 0.7rem;
+  color: grey;
+}

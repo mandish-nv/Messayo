@@ -66,7 +66,8 @@ export default function Chat({ user, msg, setMsg, userData }) {
                     </div>
                     <div>
                         <div>{user.fullName}</div>
-                        <div style={{ color: 'darkgreen' }}>Online</div>
+                        <div className="username">@{user.userName}</div>
+                        <div style={{ color: 'darkgreen',fontSize:'0.8rem' }}>Online</div>
                     </div>
                 </div>
                 <div className="info">
