@@ -1,0 +1,21 @@
+Hello
+
+backend -> backend files 
+
+src -> frontend display (react, css)
+  src.assets -> frontend components
+  src.main -> main.jsx (routing)
+
+npm run dev -> o
+cd backend -> npm run devStart
+
+
+------Mandish-------------
+
+User profile:
+1. self and others
+- display user information
+- display friend list
+
+2. others
+- friend request (send/ pending/ accepted)

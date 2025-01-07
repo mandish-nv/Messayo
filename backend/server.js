@@ -5,6 +5,9 @@ const User = require("./models/user");
 const Message = require("./models/message");
 const bodyParser = require("body-parser");
 
+const friendAcceptedList = require("./models/friendAcceptedList");
+const friendPendingList = require("./models/friendPendingList");
+
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
@@ -107,6 +110,48 @@ mongoose
     });
 
 
+    // user profile display
+    app.get("/profile/:slug", async (req, res) => {
+      try {
+        const userName = req.params.slug;
+
+        const user = await User.findOne({ userName: userName });
+        if (user) {
+          res.send(user);
+        } else { 
+          res.status(404).send("User not found");
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred while retrieving data.");
+      }
+    });
+
+
+    //check
+    app.post("/addPendingFriend", async (req, res) => {
+      try {
+        const userName = req.body.userName;
+        const friendName = req.body.friendName;
+
+        const user = await User.findOneAndUpdate(
+          { userName: userName },
+          { $push: { friendPendingList: friendName } }, 
+          { new: true, useFindAndModify: false }
+        );
+
+        if (user) {
+          res.send("Friend added successfully!");
+        } else {
+          res.status(404).send("User not found");
+        }
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("An error occurred while saving data.");
+      }
+    });
+
+    //testing -> modify
     app.post("/addFriend", async (req, res) => {//testing purpose
       const { userId, friendId } = req.body;
 
