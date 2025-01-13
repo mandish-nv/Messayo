@@ -4,6 +4,7 @@ import Chat from "./chat";
 import { useState,useEffect } from "react";
 import axios from 'axios'
 import { Link } from "react-router";
+import { BiSolidYinYang } from "react-icons/bi";
 
 export default function Users({parameter}) {
     const [user,setUser]=useState(false)
@@ -22,7 +23,7 @@ export default function Users({parameter}) {
                 const responses = await Promise.all(friendDataPromises);
                 const data = responses.map(response => response.data);
     
-                setFriendData(data); // Update state with all data at once
+                setFriendData(data); 
             } catch (error) {
                 console.error("Error fetching friend data:", error);
             }
@@ -47,7 +48,7 @@ export default function Users({parameter}) {
             fetchMsg()
         }
     },[])
-    
+     
 
     // console.log(msg )    
     

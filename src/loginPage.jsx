@@ -116,7 +116,7 @@ export default function Login({value}){
                 <div></div>
                 <br /><br/>
 
-                <div className='login-text'>Profile Picture:</div><input type='file' name="image" onChange={(event)=>handleFile(event)}></input>
+                <div className='login-text'>Profile Picture:</div><input type='file' name="image" accept="image/*" onChange={(event)=>handleFile(event)}></input>
                 <div></div>
                 <br/><br/>
 

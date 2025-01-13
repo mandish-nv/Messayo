@@ -41,7 +41,7 @@ export default function Control({ value }) {
             style={{ display: userInfo === "not-logged-in" ? "none" : "" }}
           >
             <img
-              src={userInfo === "not-logged-in" ? "" : userInfo.profilePicture}
+              src={userInfo === "not-logged-in" ? "" : userInfo.profilePicture} style={{objectFit:'cover',height:'100%',width:'100%'}}
             ></img>
           </div>
         </Link>
