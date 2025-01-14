@@ -4,6 +4,10 @@ const cors = require("cors");
 const User = require("./models/user");
 const Message = require("./models/message");
 const bodyParser = require("body-parser");
+const bcrypt=require('bcrypt')
+const crypto=require('crypto')
+const dotenv = require('dotenv');
+dotenv.config();
 
 const friendAcceptedList = require("./models/friendAcceptedList");
 const friendPendingList = require("./models/friendPendingList");
@@ -24,10 +28,14 @@ mongoose
 
     app.post("/findMessage", async (req, res) => {
       const id = req.body._id;//jo login cha tesle pako ra pathako msg matra tanne
+      
       try {
         const msg = await Message.find({
           $or: [{ senderId: id }, { receiverId: id }],
         });
+        msg.map((val)=>{
+
+        })
         res.send(msg);
       } catch (error) {
         console.log(error);
@@ -35,18 +43,73 @@ mongoose
     });
 
     app.post("/message", async (req, res) => {
-      const newUserData = new Message(req.body);
-      await newUserData.save();
-      res.json(newUserData);
+      try {
+        const { senderId, receiverId, status, msgType, message } = req.body;
+    
+        if (!senderId || !receiverId || !msgType) {
+          return res.status(400).json({ error: "Missing required fields" });
+        }
+    
+        if (msgType === 'photo') {
+          // Save photo messages directly
+          const newUserData = new Message(req.body);
+          await newUserData.save();
+          return res.json(newUserData);
+        } else {
+          // Encrypt text message
+          const algorithm = 'aes-256-cbc';
+          const key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex'); // Securely load key
+          const iv = crypto.randomBytes(16); // Generate random IV
+    
+          const cipher = crypto.createCipheriv(algorithm, key, iv);
+          let encryptedMessage = cipher.update(message, 'utf8', 'hex');
+          encryptedMessage += cipher.final('hex');
+    
+          // Combine IV and encrypted message (e.g., "iv:ciphertext")
+          const encryptedData = `${iv.toString('hex')}:${encryptedMessage}`;
+    
+          // Save encrypted message
+          const newUserData = new Message({
+            senderId,
+            receiverId,
+            message: encryptedData, // Save combined IV and ciphertext
+            status,
+            msgType,
+          });
+    
+          await newUserData.save();
+          return res.json(newUserData);
+        }
+      } catch (error) {
+        console.error("Error handling message:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+      }
     });
 
     app.post("/register", async (req, res) => {
       try {
-        const user = new User(req.body);
+        const saltRounds=10
+        
+        // const user = new User(req.body);
 
         //validation logic
+        const fullName=req.body.fullName
         const userName = req.body.userName;
+        const gender=req.body.gender
+        const dob=req.body.dob
         const email = req.body.email;
+        const password=await bcrypt.hash(req.body.password,saltRounds)
+        const profilePicture=req.body.profilePicture
+        const user=new User({
+          fullName:fullName,
+          userName:userName,
+          gender:gender,
+          dob:dob,
+          email:email,
+          password:password,
+          profilePicture:profilePicture          
+        })
+
 
         const userNameSearch = await User.findOne({ userName }); //returns whole object
         const emailSearch = await User.findOne({ email });
@@ -76,13 +139,14 @@ mongoose
         const password = req.body.password;
 
         const userNameSearch = await User.findOne({ userName: userName });
-        const passwordMatch = userNameSearch ? userNameSearch.password : "";
+        // const passwordMatch = userNameSearch ? userNameSearch.password : "";
+        const passwordMatch=userNameSearch ?(await bcrypt.compare(password,userNameSearch.password)):false
 
         if (!userNameSearch) {
           res.send("1");
-        } else if (password != passwordMatch) {
+        } else if (!passwordMatch) {
           res.send("2");
-        } else if (password === passwordMatch) {
+        } else if (passwordMatch) {
           res.send("7");
         }
       } catch (error) {
@@ -175,6 +239,26 @@ mongoose
         res.status(500).send("Internal Server Error");
       }
     });
+
+    app.post('/changePassword',async (req,res)=>{
+      const id=req.body._id
+      const password=req.body.password
+      const saltRounds=10
+      const newPassword=await bcrypt.hash(password,saltRounds)
+      try {
+        await User.updateOne(
+          { _id: id },
+          {
+            $set: { password: newPassword },
+          }
+        );
+
+        res.send("Success");
+      } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+      }
+    })
 
     app.listen(5000, () => {
       console.log("Server Connected");
