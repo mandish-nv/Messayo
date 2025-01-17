@@ -8,6 +8,8 @@ const bcrypt=require('bcrypt')
 const crypto=require('crypto')
 const dotenv = require('dotenv');
 dotenv.config();
+const algorithm = 'aes-256-cbc';
+const key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex'); 
 
 const friendAcceptedList = require("./models/friendAcceptedList");
 const friendPendingList = require("./models/friendPendingList");
@@ -27,52 +29,71 @@ mongoose
     });
 
     app.post("/findMessage", async (req, res) => {
-      const id = req.body._id;//jo login cha tesle pako ra pathako msg matra tanne
-      
+      const id = req.body._id; 
+    
       try {
-        const msg = await Message.find({
+        const messages = await Message.find({
           $or: [{ senderId: id }, { receiverId: id }],
         });
-        msg.map((val)=>{
-
-        })
-        res.send(msg);
+    
+        const decryptedMessages = messages.map((msg) => {
+          const messageObj = { ...msg._doc }; 
+    
+          if (msg.msgType === 'text') {
+            try {
+              const [ivHex, encryptedMessage] = msg.message.split(':'); 
+              const iv = Buffer.from(ivHex, 'hex');
+              const decipher = crypto.createDecipheriv(algorithm, key, iv);
+    
+              let decryptedMessage = decipher.update(encryptedMessage, 'hex', 'utf8');
+              decryptedMessage += decipher.final('utf8');
+    
+              messageObj.message = decryptedMessage; 
+            } catch (error) {
+              console.error(`Error decrypting message with ID ${msg._id}:`, error);
+              messageObj.message = "Error decrypting message"; 
+            }
+          }
+    
+          return messageObj; 
+        });
+    
+        
+        res.json(decryptedMessages);
       } catch (error) {
-        console.log(error);
+        console.error("Error finding messages:", error);
+        res.status(500).json({ error: "Internal Server Error" });
       }
     });
 
     app.post("/message", async (req, res) => {
       try {
         const { senderId, receiverId, status, msgType, message } = req.body;
-    
+  const iv = crypto.randomBytes(16); 
+        
         if (!senderId || !receiverId || !msgType) {
           return res.status(400).json({ error: "Missing required fields" });
         }
     
         if (msgType === 'photo') {
-          // Save photo messages directly
           const newUserData = new Message(req.body);
           await newUserData.save();
           return res.json(newUserData);
         } else {
-          // Encrypt text message
-          const algorithm = 'aes-256-cbc';
-          const key = Buffer.from(process.env.ENCRYPTION_KEY, 'hex'); // Securely load key
-          const iv = crypto.randomBytes(16); // Generate random IV
+          
     
           const cipher = crypto.createCipheriv(algorithm, key, iv);
           let encryptedMessage = cipher.update(message, 'utf8', 'hex');
           encryptedMessage += cipher.final('hex');
     
-          // Combine IV and encrypted message (e.g., "iv:ciphertext")
+          
           const encryptedData = `${iv.toString('hex')}:${encryptedMessage}`;
     
-          // Save encrypted message
+          
           const newUserData = new Message({
             senderId,
             receiverId,
-            message: encryptedData, // Save combined IV and ciphertext
+            message: encryptedData, 
             status,
             msgType,
           });
