@@ -43,7 +43,7 @@ export default function Message({ user,setUser, msg, friendData,setMsg}) {
                             </div>
                             <div style={{ display: 'grid', gap: '5px' }}>
                                 <div style={{ fontSize: '1.2rem' }}>{val.fullName}</div>
-                                <div style={{ fontSize: '0.9rem', color: 'grey',width:"280px",height:'20px',overflow:'hidden',display:'flex',alignItems:'center',gap:'5px' }}>
+                                <div style={{ fontSize: '0.9rem', color: 'grey',width:"280px",height:'20px',overflow:'hidden',display:'flex',gap:'5px' }}>
                                 <IoImageOutline style={{display:latestMessage==='Photo Message'?'':'none'}}/>
                                 {latestMessage}
                                 </div>

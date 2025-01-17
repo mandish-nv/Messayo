@@ -69,7 +69,7 @@ mongoose
     app.post("/message", async (req, res) => {
       try {
         const { senderId, receiverId, status, msgType, message } = req.body;
-  const iv = crypto.randomBytes(16); 
+        const iv = crypto.randomBytes(16); 
         
         if (!senderId || !receiverId || !msgType) {
           return res.status(400).json({ error: "Missing required fields" });
@@ -99,6 +99,19 @@ mongoose
           });
     
           await newUserData.save();
+          try {
+            const [ivHex, encryptedMessage] = newUserData.message.split(':'); 
+            const iv = Buffer.from(ivHex, 'hex');
+            const decipher = crypto.createDecipheriv(algorithm, key, iv);
+  
+            let decryptedMessage = decipher.update(encryptedMessage, 'hex', 'utf8');
+            decryptedMessage += decipher.final('utf8');
+  
+            newUserData.message = decryptedMessage; 
+          } catch (error) {
+            console.error(`Error decrypting message with ID ${msg._id}:`, error);
+            newUserData.message = "Error decrypting message"; 
+          }
           return res.json(newUserData);
         }
       } catch (error) {
