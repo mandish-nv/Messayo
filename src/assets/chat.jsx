@@ -4,11 +4,15 @@ import { RiCheckDoubleLine } from "react-icons/ri";
 import { useState, useRef } from "react";
 import axios from 'axios'
 import { PiMessengerLogo } from "react-icons/pi";
+import reactLogo from './logo.jpeg'
+import { IoCloseSharp } from "react-icons/io5";
+
 
 export default function Chat({ user, msg, setMsg, userData }) {
     const [text, setText] = useState('')
     const [fileName, setFileName] = useState('')
     const [photoMsg, setPhotoMsg] = useState(null)
+    const [selectedPhoto,setSelectedPhoto]=useState(null)
     let filterMsg = []
     if (user) {
         filterMsg = msg.filter((val) => ((val.senderId == userData._id && val.receiverId == user._id) || (val.receiverId == userData._id && val.senderId == user._id)))
@@ -119,9 +123,24 @@ export default function Chat({ user, msg, setMsg, userData }) {
         setFileName('')
         setPhotoMsg(null)
     }
+
+    const displayPhoto=(photo)=>{
+        setSelectedPhoto(photo)
+    }
+
+    const closePhoto=()=>{
+        setSelectedPhoto(null)
+    }
     return (
         <>
             <div className="chat-box" style={{ display: user ? '' : 'none' }}>
+                <div className="photo-display" style={{display:selectedPhoto?'':'none'}}>
+                    <div className="blur-bg"></div>
+                    <button className="cross" onClick={()=>closePhoto()}>
+                        <IoCloseSharp />
+                    </button>
+                    <img src={selectedPhoto} className="image-max"></img>
+                </div>
                 <div className="chat-head">
                     <div className="person">
                         <div className="circle">
@@ -156,7 +175,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
                                                 <RiCheckDoubleLine style={{ display: val.senderId === userData._id ? 'flex' : 'none', color: 'green' }} />
                                             </div>
                                         </div>
-                                        <div className='photo-msg' style={{display:val.msgType==='photo'?'':'none' }}>
+                                        <div className='photo-msg' style={{display:val.msgType==='photo'?'':'none' }} onClick={()=>displayPhoto(val.message)}>
                                             <img src={val.message} style={{objectFit:'cover',height:'100%',width:'100%'}}/>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px',position:'absolute',right:'10px',bottom:'5px' }}>
                                                 <div style={{ fontSize: '0.8rem', color: 'grey' }}>{formatTime(val.createdAt)}</div>
