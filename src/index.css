@@ -8,10 +8,16 @@
   /* border: 1px dotted red; */
 }
 
+:root{
+  /* color-scheme: light dark; */
+}
+
+
 body {
   font-family: "Poppins", sans-serif;
   font-weight: 400;
   font-style: normal;
+  /* background-color: light-dark(white,black); */
 }
 .nav-bar{
   display:flex;
