@@ -12,7 +12,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
     const [text, setText] = useState('')
     const [fileName, setFileName] = useState('')
     const [photoMsg, setPhotoMsg] = useState(null)
-    const [selectedPhoto,setSelectedPhoto]=useState(null)
+    const [selectedPhoto, setSelectedPhoto] = useState(null)
     let filterMsg = []
     if (user) {
         filterMsg = msg.filter((val) => ((val.senderId == userData._id && val.receiverId == user._id) || (val.receiverId == userData._id && val.senderId == user._id)))
@@ -24,7 +24,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
     const sendMsg = async () => {
         if (text.trim() !== '') {
 
-            const updatedMsg = { ...newMsg, message: text, senderId: userData._id, receiverId: user._id,msgType:'text' };
+            const updatedMsg = { ...newMsg, message: text, senderId: userData._id, receiverId: user._id, msgType: 'text' };
 
 
             try {
@@ -42,8 +42,8 @@ export default function Chat({ user, msg, setMsg, userData }) {
                 console.error('Error sending message:', error);
             }
         }
-        else if(photoMsg!==null){
-            const updatedMsg = { ...newMsg, message: photoMsg, senderId: userData._id, receiverId: user._id,msgType:'photo' };
+        else if (photoMsg !== null) {
+            const updatedMsg = { ...newMsg, message: photoMsg, senderId: userData._id, receiverId: user._id, msgType: 'photo' };
 
 
             try {
@@ -124,22 +124,61 @@ export default function Chat({ user, msg, setMsg, userData }) {
         setPhotoMsg(null)
     }
 
-    const displayPhoto=(photo)=>{
+    const displayPhoto = (photo) => {
         setSelectedPhoto(photo)
     }
 
-    const closePhoto=()=>{
+    const closePhoto = () => {
         setSelectedPhoto(null)
     }
+
+    const [scale, setScale] = useState(1); // Zoom level
+  const [dragging, setDragging] = useState(false);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+
+  const handleWheel = (e) => {
+    e.preventDefault();
+    const delta = e.deltaY > 0 ? -0.1 : 0.1; // Zoom in or out
+    setScale((prev) => Math.max(1, prev + delta)); // Ensure scale doesn't go below 1
+  };
+
+  const handleMouseDown = (e) => {
+    e.preventDefault();
+    setDragging(true);
+    setStartPos({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+
+  const handleMouseMove = (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    setPosition({
+      x: e.clientX - startPos.x,
+      y: e.clientY - startPos.y,
+    });
+  };
+
+  const handleMouseUp = () => {
+    setDragging(false);
+    // setPosition({ x: 0, y: 0 });
+  };
     return (
         <>
             <div className="chat-box" style={{ display: user ? '' : 'none' }}>
-                <div className="photo-display" style={{display:selectedPhoto?'':'none'}}>
+                <div className="photo-display" style={{ display: selectedPhoto ? '' : 'none' }}>
                     <div className="blur-bg"></div>
-                    <button className="cross" onClick={()=>closePhoto()}>
+                    <button className="cross" onClick={() => closePhoto()}>
                         <IoCloseSharp />
                     </button>
-                    <img src={selectedPhoto} className="image-max"></img>
+                    <img src={selectedPhoto} className="image-max" style={{
+                        transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`,
+                        cursor: dragging ? "grabbing" : "grab",
+                    }}
+                        onWheel={handleWheel}
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseUp}></img>
                 </div>
                 <div className="chat-head">
                     <div className="person">
@@ -167,7 +206,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
                                         <div className="circle2" style={{ display: val.senderId != userData._id ? '' : 'none' }}>
                                             <img src={user.profilePicture} style={{ objectFit: 'cover', height: '100%', width: '100%' }} />
                                         </div>
-                                        <div className="text" style={{ backgroundColor: val.senderId == userData._id ? '#FCBB15' : '',display:val.msgType==='text'?'':'none' }}>
+                                        <div className="text" style={{ backgroundColor: val.senderId == userData._id ? '#FCBB15' : '', display: val.msgType === 'text' ? '' : 'none' }}>
                                             {val.message}
 
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px' }}>
@@ -175,9 +214,9 @@ export default function Chat({ user, msg, setMsg, userData }) {
                                                 <RiCheckDoubleLine style={{ display: val.senderId === userData._id ? 'flex' : 'none', color: 'green' }} />
                                             </div>
                                         </div>
-                                        <div className='photo-msg' style={{display:val.msgType==='photo'?'':'none' }} onClick={()=>displayPhoto(val.message)}>
-                                            <img src={val.message} style={{objectFit:'cover',height:'100%',width:'100%'}}/>
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px',position:'absolute',right:'10px',bottom:'5px' }}>
+                                        <div className='photo-msg' style={{ display: val.msgType === 'photo' ? '' : 'none' }} onClick={() => displayPhoto(val.message)}>
+                                            <img src={val.message} style={{ objectFit: 'cover', height: '100%', width: '100%' }} />
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', position: 'absolute', right: '10px', bottom: '5px' }}>
                                                 <div style={{ fontSize: '0.8rem', color: 'grey' }}>{formatTime(val.createdAt)}</div>
                                                 <RiCheckDoubleLine style={{ display: val.senderId === userData._id ? 'flex' : 'none', color: 'green' }} />
                                             </div>
