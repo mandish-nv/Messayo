@@ -6,7 +6,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router'
 import ErrorMsg from './errorPage'
 import Login from './loginPage'
 import ChatPageWrapper from './chatWrapper'
-import UserProfile from './userProfile'
+import ProfileView from './ProfileView'
 
 // localStorage.setItem("user", JSON.stringify({ name: "John", age: 30 }));
 // const user = JSON.parse(localStorage.getItem("user"));
@@ -36,11 +36,11 @@ const router=createBrowserRouter([
   },
   {
     path:'/userProfile/:userId',
-    element:<UserProfile/>,
+    element:<ProfileView/>,
     errorElement:<ErrorMsg/>
   },{
     path:'/userProfile',
-    element:<UserProfile/>,
+    element:<ProfileView/>,
     errorElement:<ErrorMsg/>
   }
 ], { debug: true })

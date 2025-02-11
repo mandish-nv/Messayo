@@ -308,3 +308,16 @@ input{
   position: relative;
   cursor: pointer;
 }
+
+.profile-photo{
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-info{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
