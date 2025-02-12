@@ -196,26 +196,20 @@ mongoose
       }
     });
 
-    app.post("/retrieveFriends", async (req, res) => {
-      try {
-        const { selfId } = req.body; // Get selfId from request body
-        const currentUser = await User.findById(selfId);
-        const users = await User.find({ 
-          _id: { $nin: [selfId, ...currentUser.friends, ...currentUser.pendingRequests, ...currentUser.receivedRequests] } // Exclude self and friends
-      });
-        res.status(200).json(users);
-      } catch (error) {
-        res.status(500).json({ message: "Error retrieving users", error });
-      }
-    });
-
     app.post("/getAllUsers", async (req, res) => {
       try {
         const { selfId } = req.body; // Get selfId from request body
         const currentUser = await User.findById(selfId);
-        const users = await User.find({ 
-          _id: { $nin: [selfId, ...currentUser.friends, ...currentUser.pendingRequests, ...currentUser.receivedRequests] } // Exclude self and friends
-      });
+        const users = await User.find({
+          _id: {
+            $nin: [
+              selfId,
+              ...currentUser.friends,
+              ...currentUser.pendingRequests,
+              ...currentUser.receivedRequests,
+            ],
+          }, // Exclude self and friends
+        });
         res.status(200).json(users);
       } catch (error) {
         res.status(500).json({ message: "Error retrieving users", error });
@@ -236,32 +230,44 @@ mongoose
     });
 
     // user profile display
-    app.get("/profile/:slug", async (req, res) => {
+    app.get("/profile/:id", async (req, res) => {
       try {
-        const userName = req.params.slug;
+        const userId = req.params.id; // Use `id` instead of `slug`
 
-        const user = await User.findOne({ userName: userName });
+        // Validate MongoDB ObjectId (to prevent errors)
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+          return res.status(400).json({ message: "Invalid user ID format" });
+        }
+
+        const user = await User.findById(userId); // Use `findById` for efficiency
+
         if (user) {
-          res.send(user);
+          res.status(200).json(user);
         } else {
-          res.status(404).send("User not found");
+          res.status(404).json({ message: "User not found" });
         }
       } catch (error) {
-        console.error(error);
-        res.status(500).send("An error occurred while retrieving data.");
+        console.error("Error retrieving user profile:", error);
+        res
+          .status(500)
+          .json({ message: "An error occurred while retrieving data." });
       }
     });
 
     app.post("/sendFriendRequest", async (req, res) => {
-    try {
+      try {
         const { selfId, friendId } = req.body;
 
         if (!selfId || !friendId) {
-            return res.status(400).json({ message: "Both selfId and friendId are required" });
+          return res
+            .status(400)
+            .json({ message: "Both selfId and friendId are required" });
         }
 
         if (selfId === friendId) {
-            return res.status(400).json({ message: "You cannot send a friend request to yourself" });
+          return res
+            .status(400)
+            .json({ message: "You cannot send a friend request to yourself" });
         }
 
         // Fetch both users
@@ -269,12 +275,17 @@ mongoose
         const recipient = await User.findById(friendId);
 
         if (!sender || !recipient) {
-            return res.status(404).json({ message: "User not found" });
+          return res.status(404).json({ message: "User not found" });
         }
 
         // Check if already friends or request exists
-        if (sender.friends.includes(friendId) || sender.pendingRequests.includes(friendId)) {
-            return res.status(400).json({ message: "Friend request already sent or you are already friends" });
+        if (
+          sender.friends.includes(friendId) ||
+          sender.pendingRequests.includes(friendId)
+        ) {
+          return res.status(400).json({
+            message: "Friend request already sent or you are already friends",
+          });
         }
 
         // Add to sender's pending requests
@@ -286,11 +297,13 @@ mongoose
         await recipient.save();
 
         res.status(200).json({ message: "Friend request sent successfully" });
-    } catch (error) {
-        res.status(500).json({ message: "Error sending friend request", error });
-    }
-});
-  
+      } catch (error) {
+        res
+          .status(500)
+          .json({ message: "Error sending friend request", error });
+      }
+    });
+
     app.post("/changePassword", async (req, res) => {
       const id = req.body._id;
       const password = req.body.password;
