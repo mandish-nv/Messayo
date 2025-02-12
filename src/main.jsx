@@ -7,6 +7,8 @@ import ErrorMsg from './errorPage'
 import Login from './loginPage'
 import ChatPageWrapper from './chatWrapper'
 import ProfileView from './ProfileView'
+import UsersList from './FriendRequest'
+
 
 // localStorage.setItem("user", JSON.stringify({ name: "John", age: 30 }));
 // const user = JSON.parse(localStorage.getItem("user"));
@@ -41,6 +43,10 @@ const router=createBrowserRouter([
   },{
     path:'/userProfile',
     element:<ProfileView/>,
+    errorElement:<ErrorMsg/>
+  },{
+    path:'/friendRequest',
+    element:<UsersList/>,
     errorElement:<ErrorMsg/>
   }
 ], { debug: true })

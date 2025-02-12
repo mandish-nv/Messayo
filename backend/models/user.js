@@ -33,6 +33,16 @@ const userSchema =new mongoose.Schema({
     type:Array,
     default:[],
     required:false
+  },
+  pendingRequests:{
+    type:Array,
+    default:[],
+    required:false
+  },
+  receivedRequests:{
+    type:Array,
+    default:[],
+    required:false
   }
 }, {timestamps: true})
 

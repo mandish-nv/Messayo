@@ -49,13 +49,17 @@ export default function Control({ value }) {
           className={`icon ${val === 1 ? "active" : ""}`}
           onClick={() => setVal(1)}
         >
-          <CiGlobe />
+          <Link to={`/friendRequest`}>
+            <CiGlobe />
+          </Link>
         </div>
         <div
           className={`icon ${val === 2 ? "active" : ""}`}
           onClick={() => setVal(2)}
         >
-          <FiMessageCircle />
+          <Link to={`/message`}>
+            <FiMessageCircle />
+          </Link>
         </div>
         <div
           className={`icon ${val === 3 ? "active" : ""}`}
