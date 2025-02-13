@@ -2,7 +2,31 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
+import { sendFriendRequest } from "./FriendRequest";
+
+const removeFriend = async (selfId, friendId) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/removeFriend",
+      { selfId, friendId }
+    );
+    console.log(response.data.message);
+  } catch (error) {
+    console.error(
+      "Error removing friend",
+      error.response?.data?.message || error.message
+    );
+  }
+};
+
 const UserProfile = () => {
+  const userData =
+    JSON.parse(localStorage.getItem("login")) ||
+    JSON.parse(sessionStorage.getItem("login")) ||
+    false;
+  //local, session ma db ko value haru
+  const loggedinId = userData._id;
+
   const { id } = useParams(); // Get user ID from URL
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -47,7 +71,11 @@ const UserProfile = () => {
       <p>email: {user.email}</p>
       <p>password: {user.password}</p>
       <p>
-        profilePicture: <img src={user.profilePicture} style={{ height: "30%", width: "30%", objectFit: "cover" }}/>
+        profilePicture:{" "}
+        <img
+          src={user.profilePicture}
+          style={{ height: "30%", width: "30%", objectFit: "cover" }}
+        />
       </p>
       <br />
       <br />
@@ -60,16 +88,47 @@ const UserProfile = () => {
       </ol>
       <br />
       <br />
+
+      <p>{loggedinId === user._id ? "Same user" : "Different user"}</p>
+      <p>
+        {loggedinId != user._id && !userData.friends.includes(user._id) && userData.pendingRequests.includes(user._id)
+          ? "Friends"
+          : ""}
+      </p>
+      <p>
+        {loggedinId != user._id && !userData.friends.includes(user._id) && userData.pendingRequests.includes(user._id)
+          ? 
+          <button onClick={() => removeFriend(loggedinId, user._id)} style={{ backgroundColor: "red", cursor: "pointer", margin:'5px'}}>Remove friends</button>
+          : ""}
+      </p>
+
+
+      <p>
+        {loggedinId != user._id &&
+        !userData.friends.includes(user._id) &&
+        !userData.pendingRequests.includes(user._id)
+          ? "Request sent"
+          : ""}
+      </p>
+      <p>
+        {loggedinId != user._id &&
+        userData.friends.includes(user._id) &&
+        !userData.pendingRequests.includes(user._id) ? (
+          <button
+            style={{
+              display: loggedinId === user._id ? "none" : "",
+              backgroundColor: "yellow",
+            }}
+            onClick={() => sendFriendRequest(loggedinId, user._id)}
+          >
+            Add friend
+          </button>
+        ) : (
+          ""
+        )}
+      </p>
     </div>
   );
 };
 
 export default UserProfile;
-
-// <p>{userId === userData._id ? "Same" : "Different"}</p>
-//       <button
-//         style={{ display: userId === userData._id ? "none" : "" }}
-//         onClick={() => sendFriendRequest()}
-//       >
-//         Add friend
-//       </button>

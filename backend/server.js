@@ -401,6 +401,42 @@ mongoose
       }
     });
 
+    app.post("/removeFriend", async (req, res) => {
+      try {
+        const { selfId, friendId } = req.body;
+
+        if (!selfId || !friendId) {
+          return res
+            .status(400)
+            .json({ message: "Both selfId and friendId are required" });
+        }
+
+        // Fetch both users
+        const sender = await User.findById(selfId);
+        const recipient = await User.findById(friendId);
+
+        if (!sender || !recipient) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        //remove friends
+        sender.friends = sender.friends.filter(reqId => reqId.toString() !== friendId);
+    
+        recipient.friends = recipient.friends.filter(reqId => reqId.toString() !== selfId);
+    
+        // Save changes
+        await sender.save();
+        await recipient.save();
+    
+        res.status(200).json({ message: "Friend removed successfully" });
+
+      } catch (error) {
+        res
+          .status(500)
+          .json({ message: "Error sending friend request", error });
+      }
+    });
+
     app.post("/changePassword", async (req, res) => {
       const id = req.body._id;
       const password = req.body.password;
