@@ -196,7 +196,104 @@ mongoose
       }
     });
 
-    app.post("/getAllUsers", async (req, res) => {
+    app.post("/acceptFriendRequest", async (req, res) => {
+      try {
+        const { selfId, friendId } = req.body;
+    
+        if (!selfId || !friendId) {
+          return res.status(400).json({ message: "Both selfId and friendId are required" });
+        }
+    
+        if (selfId === friendId) {
+          return res.status(400).json({ message: "You cannot accept a friend request from yourself" });
+        }
+    
+        // Fetch both users using `_id`
+        const sender = await User.findById(selfId);
+        const recipient = await User.findById(friendId);
+    
+        if (!sender || !recipient) {
+          return res.status(404).json({ message: "User not found" });
+        }
+    
+        // Check if they are already friends
+        if (sender.friends.includes(friendId)) {
+          return res.status(400).json({ message: "You are already friends" });
+        }
+    
+        sender.pendingRequests = sender.pendingRequests.filter(reqId => reqId.toString() !== friendId);
+    
+        recipient.receivedRequests = recipient.receivedRequests.filter(reqId => reqId.toString() !== selfId);
+
+        sender.friends.push(friendId);
+        recipient.friends.push(selfId);
+    
+        // Save changes
+        await sender.save();
+        await recipient.save();
+    
+        res.status(200).json({ message: "Friend request accepted successfully" });
+      } catch (error) {
+        console.error("Error accepting friend request:", error);
+        res.status(500).json({ message: "Error accepting friend request", error });
+      }
+    });
+    
+    app.post("/rejectFriendRequest", async (req, res) => {
+      try {
+        const { selfId, friendId } = req.body;
+    
+        if (!selfId || !friendId) {
+          return res.status(400).json({ message: "Both selfId and friendId are required" });
+        }
+    
+        if (selfId === friendId) {
+          return res.status(400).json({ message: "You cannot accept a friend request from yourself" });
+        }
+    
+        // Fetch both users using `_id`
+        const sender = await User.findById(selfId);
+        const recipient = await User.findById(friendId);
+    
+        if (!sender || !recipient) {
+          return res.status(404).json({ message: "User not found" });
+        }
+    
+        // Check if they are already friends
+        if (sender.friends.includes(friendId)) {
+          return res.status(400).json({ message: "You are already friends" });
+        }
+    
+        sender.pendingRequests = sender.pendingRequests.filter(reqId => reqId.toString() !== friendId);
+    
+        recipient.receivedRequests = recipient.receivedRequests.filter(reqId => reqId.toString() !== selfId);
+    
+        // Save changes
+        await sender.save();
+        await recipient.save();
+    
+        res.status(200).json({ message: "Friend request rejected successfully" });
+      } catch (error) {
+        console.error("Error rejecting friend request:", error);
+        res.status(500).json({ message: "Error rejecting friend request", error });
+      }
+    });
+    
+
+    app.post("/getPendingRequests", async (req, res) => {
+      try {
+        const { selfId } = req.body; // Get selfId from request body
+        const currentUser = await User.findById(selfId);
+        const users = await User.find({
+          _id: { $in: currentUser.pendingRequests },
+        });
+        res.status(200).json(users);
+      } catch (error) {
+        res.status(500).json({ message: "Error retrieving users", error });
+      }
+    });
+
+    app.post("/addFriendUsers", async (req, res) => {
       try {
         const { selfId } = req.body; // Get selfId from request body
         const currentUser = await User.findById(selfId);
