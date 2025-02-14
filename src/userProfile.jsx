@@ -6,10 +6,10 @@ import { sendFriendRequest } from "./FriendRequest";
 
 const removeFriend = async (selfId, friendId) => {
   try {
-    const response = await axios.post(
-      "http://localhost:5000/removeFriend",
-      { selfId, friendId }
-    );
+    const response = await axios.post("http://localhost:5000/removeFriend", {
+      selfId,
+      friendId,
+    });
     console.log(response.data.message);
   } catch (error) {
     console.error(
@@ -31,6 +31,7 @@ const UserProfile = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [friends, setFriends] = useState([]);
 
   useEffect(() => {
     if (!id) {
@@ -52,6 +53,35 @@ const UserProfile = () => {
 
     fetchUserProfile();
   }, [id]);
+
+  useEffect(() => {
+    const fetchFriends = async () => {
+      try {
+        // Fetch current user's data to get the friends list
+        const userResponse = await axios.get(`http://localhost:5000/profile/${id}`);
+
+        if (!userResponse.data.friends) {
+          setError("No friends found.");
+          return;
+        }
+
+        // Fetch friends' details using their IDs
+        const friendsResponse = await axios.post(
+          "http://localhost:5000/retrieveFriendsInfo",
+          {
+            friendsList: userResponse.data.friends,
+          }
+        );
+
+        setFriends(friendsResponse.data);
+      } catch (error) {
+        console.error("Error fetching friends:", error);
+        setError(error.message);
+      }
+    };
+
+    fetchFriends();
+  }, [loggedinId]); // Runs when selfId changes
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -81,39 +111,76 @@ const UserProfile = () => {
       <br />
 
       <h1>Friend list:</h1>
-      <ol>
-        {user.friends.map((val, index) => {
-          return <li key={index}>{val}</li>;
-        })}
-      </ol>
+      <ul>
+        {friends.map((friend) => (
+          <li
+            key={friend._id}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              marginBottom: "10px",
+            }}
+          >
+            <img
+              src={friend.profilePicture || "https://via.placeholder.com/50"}
+              alt={`${friend.name}'s Profile`}
+              style={{
+                width: "50px",
+                height: "50px",
+                borderRadius: "50%",
+                marginRight: "10px",
+              }}
+            />
+            <span>{friend.userName}</span>
+          </li>
+        ))}
+      </ul>
+
       <br />
       <br />
 
       <p>{loggedinId === user._id ? "Same user" : "Different user"}</p>
+
       <p>
-        {loggedinId != user._id && !userData.friends.includes(user._id) && userData.pendingRequests.includes(user._id)
+        {loggedinId != user._id &&
+        userData.friends.includes(user._id)
           ? "Friends"
           : ""}
       </p>
+
       <p>
-        {loggedinId != user._id && !userData.friends.includes(user._id) && userData.pendingRequests.includes(user._id)
-          ? 
-          <button onClick={() => removeFriend(loggedinId, user._id)} style={{ backgroundColor: "red", cursor: "pointer", margin:'5px'}}>Remove friends</button>
+        {loggedinId != user._id &&
+        userData.friends.includes(user._id) ? (
+          <button
+            onClick={() => removeFriend(loggedinId, user._id)}
+            style={{ backgroundColor: "red", cursor: "pointer", margin: "5px" }}
+          >
+            Remove friends
+          </button>
+        ) : (
+          ""
+        )}
+      </p>
+
+      <p>
+        {loggedinId != user._id &&
+        userData.pendingRequests.includes(user._id) 
+          ? "Request sent"
           : ""}
       </p>
 
+      <p>
+        {loggedinId != user._id &&
+        userData.receivedRequests.includes(user._id) 
+          ? "Request received"
+          : ""}
+      </p>
 
       <p>
         {loggedinId != user._id &&
         !userData.friends.includes(user._id) &&
-        !userData.pendingRequests.includes(user._id)
-          ? "Request sent"
-          : ""}
-      </p>
-      <p>
-        {loggedinId != user._id &&
-        userData.friends.includes(user._id) &&
-        !userData.pendingRequests.includes(user._id) ? (
+        !userData.pendingRequests.includes(user._id) &&
+        !userData.receivedRequests.includes(user._id) ? (
           <button
             style={{
               display: loggedinId === user._id ? "none" : "",
