@@ -2,7 +2,20 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 
-import { sendFriendRequest } from "./FriendRequest";
+const sendFriendRequest = async (selfId, friendId) => {
+  try {
+    const response = await axios.post(
+      "http://localhost:5000/sendFriendRequest",
+      { selfId, friendId }
+    );
+    console.log(response.data.message);
+  } catch (error) {
+    console.error(
+      "Error sending friend request:",
+      error.response?.data?.message || error.message
+    );
+  }
+};
 
 const removeFriend = async (selfId, friendId) => {
   try {

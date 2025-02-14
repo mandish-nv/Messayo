@@ -214,33 +214,37 @@ mongoose
             });
         }
 
-        // Fetch both users using `_id`
-        const sender = await User.findById(selfId);
-        const recipient = await User.findById(friendId);
+        // Fetch both users
+        const recipient = await User.findById(selfId); // The one accepting the request
+        const sender = await User.findById(friendId); // The one who sent the request
 
-        if (!sender || !recipient) {
+        if (!recipient || !sender) {
           return res.status(404).json({ message: "User not found" });
         }
 
         // Check if they are already friends
-        if (sender.friends.includes(friendId)) {
+        if (recipient.friends.includes(friendId)) {
           return res.status(400).json({ message: "You are already friends" });
         }
 
-        sender.pendingRequests = sender.pendingRequests.filter(
-          (reqId) => reqId.toString() !== friendId
-        );
+        // Ensure the friend request exists
+        if (!recipient.receivedRequests.includes(friendId)) {
+          return res
+            .status(400)
+            .json({ message: "No pending friend request found" });
+        }
 
-        recipient.receivedRequests = recipient.receivedRequests.filter(
-          (reqId) => reqId.toString() !== selfId
-        );
+        // Remove friend request from recipient's receivedRequests
+        await User.findByIdAndUpdate(selfId, {
+          $pull: { receivedRequests: friendId },
+          $push: { friends: friendId },
+        });
 
-        sender.friends.push(friendId);
-        recipient.friends.push(selfId);
-
-        // Save changes
-        await sender.save();
-        await recipient.save();
+        // Remove friend request from sender's pendingRequests
+        await User.findByIdAndUpdate(friendId, {
+          $pull: { pendingRequests: selfId },
+          $push: { friends: selfId },
+        });
 
         res
           .status(200)
@@ -267,34 +271,34 @@ mongoose
           return res
             .status(400)
             .json({
-              message: "You cannot accept a friend request from yourself",
+              message: "You cannot reject a friend request from yourself",
             });
         }
 
-        // Fetch both users using `_id`
-        const sender = await User.findById(selfId);
-        const recipient = await User.findById(friendId);
+        // Fetch both users
+        const recipient = await User.findById(selfId); // The one rejecting the request
+        const sender = await User.findById(friendId); // The one who sent the request
 
-        if (!sender || !recipient) {
+        if (!recipient || !sender) {
           return res.status(404).json({ message: "User not found" });
         }
 
-        // Check if they are already friends
-        if (sender.friends.includes(friendId)) {
-          return res.status(400).json({ message: "You are already friends" });
+        // Ensure the friend request exists before rejecting
+        if (!recipient.receivedRequests.includes(friendId)) {
+          return res
+            .status(400)
+            .json({ message: "No pending friend request found" });
         }
 
-        sender.pendingRequests = sender.pendingRequests.filter(
-          (reqId) => reqId.toString() !== friendId
-        );
+        // Remove friend request from recipient's receivedRequests
+        await User.findByIdAndUpdate(selfId, {
+          $pull: { receivedRequests: friendId },
+        });
 
-        recipient.receivedRequests = recipient.receivedRequests.filter(
-          (reqId) => reqId.toString() !== selfId
-        );
-
-        // Save changes
-        await sender.save();
-        await recipient.save();
+        // Remove friend request from sender's pendingRequests
+        await User.findByIdAndUpdate(friendId, {
+          $pull: { pendingRequests: selfId },
+        });
 
         res
           .status(200)
@@ -312,7 +316,7 @@ mongoose
         const { selfId } = req.body; // Get selfId from request body
         const currentUser = await User.findById(selfId);
         const users = await User.find({
-          _id: { $in: currentUser.pendingRequests },
+          _id: { $in: currentUser.receivedRequests },
         });
         res.status(200).json(users);
       } catch (error) {
