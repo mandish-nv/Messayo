@@ -196,6 +196,36 @@ mongoose
       }
     });
 
+    app.get("/searchUsers", async (req, res) => {
+      try {
+        const query = req.query.query;
+        const selfId = req.query.selfId;
+    
+        if (!query || !selfId) {
+          return res.status(400).json({ message: "Search query and selfId are required" });
+        }
+    
+        // Fetch the logged-in user to get the friends list
+        const currentUser = await User.findById(selfId).select("friends");
+    
+        if (!currentUser) {
+          return res.status(404).json({ message: "User not found" });
+        }
+    
+        // Search users based on fullName and ensure the user is in the friends list
+        const users = await User.find({
+          fullName: { $regex: query, $options: "i" }, // Case-insensitive search
+          _id: { $in: currentUser.friends }, // Only users in the friends list
+        }).select("_id userName fullName profilePicture");
+    
+        res.status(200).json(users);
+      } catch (error) {
+        console.error("Error searching users:", error);
+        res.status(500).json({ message: "Server error", error });
+      }
+    });
+    
+
     app.post("/acceptFriendRequest", async (req, res) => {
       try {
         const { selfId, friendId } = req.body;

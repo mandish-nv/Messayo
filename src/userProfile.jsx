@@ -161,6 +161,14 @@ const UserProfile = () => {
           : ""}
       </p>
 
+      {/* yo link chai milau hai */}
+      <p>
+        {loggedinId != user._id &&
+        userData.friends.includes(user._id)
+          ? <Link>Send message</Link>
+          : ""}
+      </p>
+
       <p>
         {loggedinId != user._id &&
         userData.friends.includes(user._id) ? (
