@@ -7,6 +7,7 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
+const path=require("path")
 dotenv.config();
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
