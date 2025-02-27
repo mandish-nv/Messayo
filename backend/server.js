@@ -4,7 +4,7 @@ const cors = require("cors");
 const User = require("./models/user");
 const Message = require("./models/message");
 const bodyParser = require("body-parser");
-const bcrypt = require("bcrypt");
+const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
 dotenv.config();
