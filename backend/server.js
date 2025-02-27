@@ -15,7 +15,7 @@ const port=process.env.PORT||5000
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
-const URL = "mongodb+srv://hilubabz:hilubabz@cluster0.j2ohw.mongodb.net/Messayo";
+const URL = process.env.MONGODB_URI;
 app.use(express.json());
 app.use(cors());
 
