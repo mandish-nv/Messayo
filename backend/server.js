@@ -433,6 +433,7 @@ mongoose
           .json({ message: "Error retrieving friends info", error });
       }
     });
+    app.use(express.static(path.join(__dirname, "../frontend/build")));
 
     app.post("/sendFriendRequest", async (req, res) => {
       try {
@@ -542,7 +543,11 @@ mongoose
         res.status(500).send("Internal Server Error");
       }
     });
-
+    
+    // Serve React frontend for all non-API routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
 
     app.listen(port, () => {
       console.log("Server Connected");
