@@ -1,0 +1,446 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{
+  padding: 0;
+  margin: 0;
+  /* border: 1px dotted red; */
+}
+
+:root{
+  /* color-scheme: light dark; */
+}
+
+
+body {
+  font-family: "Poppins", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  /* background-color: light-dark(white,black); */
+}
+.nav-bar{
+  display:flex;
+  gap:7rem;
+  align-items:center;
+  padding-left:1rem;
+  justify-content:center;
+  position:relative;
+  height: 90px;
+}
+
+.logo{
+  width: 50px;
+}
+
+.search-bar{
+  border: 1px black solid;
+  height: 30px;
+  display: flex;
+  gap: 0.7rem;
+  align-items: center;
+  padding:0.2rem 1.5rem;
+  border-radius: 1rem;
+}
+
+.circle{
+  height:50px;
+  width: 50px;
+  border-radius: 50%;
+  background-color: grey;
+  overflow: hidden;
+}
+
+
+.circle2{
+  height:40px;
+  width:40px;
+  border-radius: 50%;
+  background-color: grey;
+  overflow: hidden;
+}
+
+.side-bar{
+  display: grid;
+  grid-template-rows: 60% 40%;
+  height: 100vh;
+  width: 5rem;
+  justify-content: center;
+  background-color: rgb(249, 249, 249);
+  position: sticky;
+  top: 0;   
+  border-right: 1px solid rgb(221, 221, 221);
+}
+
+.icon {
+  color:#FCBB15;
+  font-size:2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: transparent;
+  cursor: pointer;
+  transition: all 0.5s ease;
+}
+
+.icon.active {
+  background-color: #FCBB15;
+  color: white;
+}
+
+.scroll{
+  overflow-y: hidden; 
+}
+
+.scroll:hover{
+  overflow-y: auto;
+}
+
+.search-user{
+  border: 1px black solid;
+  padding:0.5rem 1rem;
+  margin :0 15px;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+input{
+   outline: none;
+}
+.user-display{
+  /* padding-left: 20px; */
+  margin-left: 20px;
+  display:flex;
+  flex-direction: column;
+  gap:20px;
+  height: 100vh;
+  padding-top: 2rem;
+  border-right: 1px solid rgb(221, 221, 221);
+
+}
+
+.users{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  /* justify-content:space-between; */
+  width:100%;
+  transition: all 0.5s ease-in-out;
+  cursor: pointer;
+}
+
+.user-block{
+  display:grid;
+  gap:20px;
+  padding-right: 15px;
+  border-top: 1px solid rgb(221, 221, 221);
+  padding-top: 20px;
+}
+
+.user-scroll{
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* .user-scroll:hover{
+  overflow-y: scroll;
+} */
+
+::-webkit-scrollbar{
+  width: 5px;
+  background-color: rgb(176, 176, 176);
+  border-radius: 1rem;
+}
+::-webkit-scrollbar-thumb{
+  background-color: #FCBB15;
+  border-radius: 1rem;
+}
+
+.users:hover{
+  background-color: rgb(234, 234, 234);
+}
+
+.chat-box{
+  height: 100vh;
+  display: grid;
+  grid-template-rows: 15% 76% 9%;
+  margin: 0 1rem;
+  position: relative;
+} 
+
+.photo-display{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.blur-bg{
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  background-color:grey;
+  opacity: 0.7;
+}
+
+.cross{
+  position: absolute;
+  right:1rem;
+  top: 20px;
+  font-size: 2.5rem;
+  color: #FCBB15;
+}
+
+.image-max{
+  width: 50%;
+  z-index: 3;
+}
+
+.chat-head{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px rgb(221, 221, 221) solid;
+  /* background-color: rgb(241, 241, 241); */
+}
+
+.person{
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.info{
+  font-size: 2rem;
+  color: #FCBB15;
+}
+
+.message{
+  display: flex;
+  position: relative;
+  align-items: center;
+  gap:15px;
+  border: 1px solid black;
+  padding:0.5rem 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+}
+
+.msg-text{
+  width:57vw
+}
+
+.msg-display{
+  overflow-y: auto;
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column-reverse;
+  padding-right: 10px;
+}
+
+.text{
+  max-width:450px;
+  /* border: 1px solid grey; */
+  padding:10px;  
+  border-radius: 1rem;
+  background-color: rgb(231, 231, 231);
+  display: grid;
+  justify-content: right;
+}
+
+.msg-bar{
+  display: flex;
+  padding-bottom:20px;
+  width:100%;
+  gap:10px;
+  align-items: center;
+}
+
+.default-chat{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.username{
+  font-size: 0.7rem;
+  color: grey;
+}
+
+.photo-send{
+  position: absolute;
+  left: 0;
+  top: -30px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.remove-photo{
+  height: 20px;
+  width: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  background-color: #FCBB15;
+  color: white;
+  cursor: pointer;
+}
+
+.photo-msg{
+  height: 300px;
+  width: 300px;
+  border-radius: 1rem;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+}
+
+.profile-photo{
+  height: 150px;
+  width: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.profile-info{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.heading{
+  font-size: 2.5rem;
+  font-weight: bold;
+  color:#FCBB15;
+  margin-bottom: 2rem;
+}
+
+.friend-pending{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  
+}
+
+.circle3{
+  height: 70px;
+  width: 70px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.pending-detail{
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.buttons{
+  display: flex;
+  gap: 2rem;
+  padding-right: 2rem;
+}
+.buttons button{
+  padding:0.4rem 1.4rem;
+  color: white;
+  border-radius: 1rem;
+
+}
+
+.send-req-button{
+  background-color: #FCBB15;
+  color: white; 
+  cursor: pointer;
+  margin-right: 4rem;
+  padding: 0.4rem 1.4rem;
+  border-radius: 1rem;
+  box-shadow: 2px 2px 5px orange;
+}
+
+.discover{
+  font-size: 4rem;
+}
+
+.profile-data{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 1.3rem;
+}
+
+.friend-profile{
+  display: flex;
+  flex-direction: column;
+  border:1px #FCBB15 solid;
+  padding:30px;
+  align-items: center;
+  border-radius: 1rem;
+  gap:10px;
+}
+
+.friend-list{
+  padding-top: 4rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #FCBB15;
+  padding-bottom: 1rem;
+}
+
+.remove-button{
+  background-color: red;
+  padding:0.2rem 0.7rem;
+  border-radius: 1rem;
+  color: white;
+  cursor: pointer;
+}
+
+.circle4{
+  height: 100px;
+  width: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+}
+
+.land{
+  background-color: black;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} 
+
+.land-content{
+  position: absolute;
+  top: 50%;
+  left: 40%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-signup{
+  background-color: #FCBB15;
+  height: 70px;
+  width: 200px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: white;
+  font-size: 1.5rem;
+  border-radius: 1rem;
+}

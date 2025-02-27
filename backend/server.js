@@ -10,11 +10,12 @@ const dotenv = require("dotenv");
 dotenv.config();
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+const port=process.env.PORT||5000
 
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
-const URL = "mongodb://localhost:27017/Dokoto";
+const URL = "mongodb+srv://hilubabz:hilubabz@cluster0.j2ohw.mongodb.net/Messayo";
 app.use(express.json());
 app.use(cors());
 
@@ -542,7 +543,8 @@ mongoose
       }
     });
 
-    app.listen(5000, () => {
+
+    app.listen(port, () => {
       console.log("Server Connected");
     });
   })
