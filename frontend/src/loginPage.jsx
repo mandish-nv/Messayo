@@ -11,7 +11,7 @@ export default function Login({value}){
     const [val,setVal]=useState(value)
     const [check,setCheck]=useState(false)
     const register=async()=>{
-        const res=await axios.post('http://localhost:5000/register',regInfo)
+        const res=await axios.post('https://messayo-backend.onrender.com/register',regInfo)
         setError(res.data)
         setRegInfo({fullName:'',userName:'',gender:'',dob:'',email:'',password:'',profilePicture:''})
         if(res.data=='6'){
@@ -28,11 +28,11 @@ export default function Login({value}){
     }
 
     const login=async()=>{
-        const res=await axios.post('http://localhost:5000/login',loginInfo)
+        const res=await axios.post('https://messayo-backend.onrender.com/login',loginInfo)
         setError(res.data)
         if(res.data=='7'){
             setVal(3)
-            const res1=await axios.post('http://localhost:5000/find',loginInfo)
+            const res1=await axios.post('https://messayo-backend.onrender.com/find',loginInfo)
             const info=res1.data
             if(check){
                 localStorage.setItem('login',JSON.stringify(info))

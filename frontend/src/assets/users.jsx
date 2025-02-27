@@ -24,7 +24,7 @@ export default function Users({ parameter }) {
   //   const fetchFriendData = async () => {
   //     try {
   //       const friendDataPromises = friend.map((val) =>
-  //         axios.post("http://localhost:5000/retrieveOne", val)
+  //         axios.post("https://messayo-backend.onrender.com/retrieveOne", val)
   //       );
 
   //       const responses = await Promise.all(friendDataPromises);
@@ -44,7 +44,7 @@ export default function Users({ parameter }) {
     const fetchFriends = async () => {
       try {
         // Fetch current user's data to get the friends list
-        const userResponse = await axios.get(`http://localhost:5000/profile/${userData._id}`);
+        const userResponse = await axios.get(`https://messayo-backend.onrender.com/profile/${userData._id}`);
 
         if (!userResponse.data.friends) {
           setError("No friends found.");
@@ -53,7 +53,7 @@ export default function Users({ parameter }) {
 
         // Fetch friends' details using their IDs
         const friendsResponse = await axios.post(
-          "http://localhost:5000/retrieveFriendsInfo",
+          "https://messayo-backend.onrender.com/retrieveFriendsInfo",
           {
             friendsList: userResponse.data.friends,
           }
@@ -74,7 +74,7 @@ export default function Users({ parameter }) {
     const fetchMsg = async () => {
       try {
         const response = await axios.post(
-          "http://localhost:5000/findMessage",
+          "https://messayo-backend.onrender.com/findMessage",
           userData
         );
         setMsg(response.data);
@@ -101,7 +101,7 @@ export default function Users({ parameter }) {
     }
 
     try {
-      const response = await axios.get("http://localhost:5000/searchUsers", {
+      const response = await axios.get("https://messayo-backend.onrender.com/searchUsers", {
         params: { query: query, selfId: userData._id },
       });
       setSearchResults(response.data);
