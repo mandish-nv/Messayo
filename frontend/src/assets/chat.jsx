@@ -28,7 +28,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
 
 
             try {
-                const response = await axios.post('https://messayo-backend.onrender.com/message', updatedMsg);
+                const response = await axios.post('http://localhost:5000/message', updatedMsg);
                 setMsg((prevMsg) => [...prevMsg, response.data]);
 
                 setText('');
@@ -47,7 +47,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
 
 
             try {
-                const response = await axios.post('https://messayo-backend.onrender.com/message', updatedMsg);
+                const response = await axios.post('http://localhost:5000/message', updatedMsg);
                 setMsg((prevMsg) => [...prevMsg, response.data]);
 
                 setPhotoMsg(null);

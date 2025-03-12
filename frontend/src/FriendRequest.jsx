@@ -7,7 +7,7 @@ import {Link} from "react-router";
 const acceptFriendRequest = async (selfId, friendId) => {
   try {
     const response = await axios.post(
-      "https://messayo-backend.onrender.com/acceptFriendRequest",
+      "http://localhost:5000/acceptFriendRequest",
       { selfId, friendId }
     );
     console.log(response.data.message);
@@ -23,7 +23,7 @@ const acceptFriendRequest = async (selfId, friendId) => {
 const rejectFriendRequest = async (selfId, friendId) => {
   try {
     const response = await axios.post(
-      "https://messayo-backend.onrender.com/rejectFriendRequest",
+      "http://localhost:5000/rejectFriendRequest",
       { selfId, friendId }
     );
     console.log(response.data.message);
@@ -39,7 +39,7 @@ const rejectFriendRequest = async (selfId, friendId) => {
 const sendFriendRequest = async (selfId, friendId) => {
   try {
     const response = await axios.post(
-      "https://messayo-backend.onrender.com/sendFriendRequest",
+      "http://localhost:5000/sendFriendRequest",
       { selfId, friendId }
     );
     console.log(response.data.message);
@@ -69,7 +69,7 @@ export default function UsersList() {
     const fetchPendingRequests = async () => {
       try {
         const response = await axios.post(
-          "https://messayo-backend.onrender.com/getPendingRequests",
+          "http://localhost:5000/getPendingRequests",
           { selfId }
         );
         setPendingRequests(response.data);
@@ -88,7 +88,7 @@ export default function UsersList() {
     const fetchAddFriendData = async () => {
       try {
         const response = await axios.post(
-          "https://messayo-backend.onrender.com/addFriendUsers",
+          "http://localhost:5000/addFriendUsers",
           { selfId }
         );
         setAddFriendData(response.data);
