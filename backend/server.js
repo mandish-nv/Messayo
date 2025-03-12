@@ -1,4 +1,6 @@
 const express = require("express");
+const http = require('http');
+const WebSocket = require('ws');
 const mongoose = require("mongoose");
 const cors = require("cors");
 const User = require("./models/user");
@@ -11,8 +13,6 @@ const path=require("path")
 dotenv.config();
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
-// const port=process.env.PORT||5000
-const port=5000
 
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -20,6 +20,28 @@ app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 const URL = process.env.MONGODB_URI;
 app.use(express.json());
 app.use(cors());
+
+const server = http.createServer(app);
+const wss = new WebSocket.Server({ server });
+// WebSocket connection
+wss.on('connection', (ws) => {
+  console.log('Client connected');
+
+  ws.on('message', (message) => {
+    console.log(`Received: ${message}`);
+
+    // Broadcast to all clients
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(message);
+      }
+    });
+  });
+
+  ws.on('close', () => {
+    console.log('Client disconnected');
+  });
+});
 
 mongoose
   .connect(URL)
@@ -435,7 +457,6 @@ mongoose
           .json({ message: "Error retrieving friends info", error });
       }
     });
-    app.use(express.static(path.join(__dirname, "../frontend/build")));
 
     app.post("/sendFriendRequest", async (req, res) => {
       try {
@@ -545,13 +566,8 @@ mongoose
         res.status(500).send("Internal Server Error");
       }
     });
-    
-    // Serve React frontend for all non-API routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
-});
 
-    app.listen(port, () => {
+    server.listen(5000, () => {
       console.log("Server Connected");
     });
   })
