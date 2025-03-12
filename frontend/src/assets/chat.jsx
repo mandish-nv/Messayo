@@ -54,15 +54,9 @@ export default function Chat({ user, msg, setMsg, userData }) {
         
             const parsedMessage = JSON.parse(messageData); // Parse JSON string
             console.log("Received message:", parsedMessage);
-            const updatedMsg = {
-              ...newMsg,
-              message: parsedMessage,
-              senderId: userData._id,
-              receiverId: user._id,
-              msgType: "text",
-            };
             
-            setMsg((prevMsg) => [...prevMsg, updatedMsg]);
+            
+            setMsg((prevMsg) => [...prevMsg, parsedMessage]);
             console.log(msg)
         
           } catch (error) {
