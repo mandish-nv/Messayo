@@ -1,7 +1,7 @@
 import { CiCircleInfo } from "react-icons/ci";
 import { GoPaperclip } from "react-icons/go";
 import { RiCheckDoubleLine } from "react-icons/ri";
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import axios from "axios";
 import { PiMessengerLogo } from "react-icons/pi";
 import reactLogo from "./logo.jpeg";
@@ -9,6 +9,8 @@ import { IoCloseSharp } from "react-icons/io5";
 
 export default function Chat({ user, msg, setMsg, userData }) {
   const [text, setText] = useState("");
+  const [socket, setSocket] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [fileName, setFileName] = useState("");
   const [photoMsg, setPhotoMsg] = useState(null);
   const [selectedPhoto, setSelectedPhoto] = useState(null);
@@ -29,6 +31,62 @@ export default function Chat({ user, msg, setMsg, userData }) {
   });
   const fileInputRef = useRef(null);
 
+  useEffect(() => {
+    const connectWebSocket = () => {
+        const newSocket = new WebSocket("ws://localhost:5000");
+
+        newSocket.onopen = () => {
+            console.log("Connected to WebSocket");
+            setSocket(newSocket);
+        };
+
+        newSocket.onmessage = async (event) => {
+          try {
+            let messageData = event.data;
+        
+            if (event.data instanceof Blob) {
+              messageData = await event.data.text(); // Convert Blob to string
+            } else if (event.data instanceof ArrayBuffer) {
+              messageData = new TextDecoder().decode(event.data); // Handle binary data
+            } else {
+              messageData = event.data.toString(); // Ensure it's a string
+            }
+        
+            const parsedMessage = JSON.parse(messageData); // Parse JSON string
+            console.log("Received message:", parsedMessage);
+            const updatedMsg = {
+              ...newMsg,
+              message: parsedMessage,
+              senderId: userData._id,
+              receiverId: user._id,
+              msgType: "text",
+            };
+            
+            setMsg((prevMsg) => [...prevMsg, updatedMsg]);
+            console.log(msg)
+        
+          } catch (error) {
+            console.error("Error parsing WebSocket message. Received data:", event.data);
+          }
+        };        
+
+        newSocket.onclose = () => {
+            console.warn("WebSocket closed, attempting to reconnect...");
+            setTimeout(connectWebSocket, 3000);
+        };
+
+        newSocket.onerror = (error) => console.error("WebSocket error:", error);
+    };
+
+    connectWebSocket();
+
+    return () => {
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close(); // Cleanup
+      }
+    };
+  }, [setMsg]);
+
   const sendMsg = async () => {
     if (text.trim() !== "") {
       const updatedMsg = {
@@ -45,6 +103,12 @@ export default function Chat({ user, msg, setMsg, userData }) {
           updatedMsg
         );
         setMsg((prevMsg) => [...prevMsg, response.data]);
+
+        if (socket && socket.readyState === WebSocket.OPEN) {
+          // Check if socket is open
+          socket.send(text);
+          setText("");
+        }
 
         setText("");
         setNewMsg({
@@ -269,6 +333,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
                     }}
                   >
                     {val.message}
+                    {messages}
 
                     <div
                       style={{

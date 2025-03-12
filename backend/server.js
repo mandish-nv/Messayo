@@ -13,6 +13,8 @@ const path=require("path")
 dotenv.config();
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
+// const port=process.env.PORT||5000
+const port=5000
 
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
@@ -28,15 +30,23 @@ wss.on('connection', (ws) => {
   console.log('Client connected');
 
   ws.on('message', (message) => {
-    console.log(`Received: ${message}`);
+    console.log(`Received:`, message.toString()); // Convert Buffer to string
 
-    // Broadcast to all clients
-    wss.clients.forEach(client => {
-      if (client.readyState === WebSocket.OPEN) {
-        client.send(message);
-      }
-    });
+    try {
+      const parsedMessage = message.toString(); 
+      // Broadcast the JSON string to all clients
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify(parsedMessage)); 
+        }
+      });
+
+    } catch (error) {
+      console.error("Invalid JSON received:", message.toString());
+    }
   });
+
+
 
   ws.on('close', () => {
     console.log('Client disconnected');
@@ -457,6 +467,7 @@ mongoose
           .json({ message: "Error retrieving friends info", error });
       }
     });
+    app.use(express.static(path.join(__dirname, "../frontend/build")));
 
     app.post("/sendFriendRequest", async (req, res) => {
       try {
@@ -566,8 +577,13 @@ mongoose
         res.status(500).send("Internal Server Error");
       }
     });
+    
+    // Serve React frontend for all non-API routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+});
 
-    server.listen(5000, () => {
+    server.listen(port, () => {
       console.log("Server Connected");
     });
   })
