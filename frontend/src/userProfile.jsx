@@ -5,7 +5,7 @@ import axios from "axios";
 const sendFriendRequest = async (selfId, friendId) => {
   try {
     const response = await axios.post(
-      "http://localhost:5000/sendFriendRequest",
+      "https://messayo-backend.onrender.com/sendFriendRequest",
       { selfId, friendId }
     );
     console.log(response.data.message);
@@ -19,7 +19,7 @@ const sendFriendRequest = async (selfId, friendId) => {
 
 const removeFriend = async (selfId, friendId) => {
   try {
-    const response = await axios.post("http://localhost:5000/removeFriend", {
+    const response = await axios.post("https://messayo-backend.onrender.com/removeFriend", {
       selfId,
       friendId,
     });
@@ -56,7 +56,7 @@ const UserProfile = () => {
 
     const fetchUserProfile = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/profile/${id}`);
+        const response = await axios.get(`https://messayo-backend.onrender.com/profile/${id}`);
         setUser(response.data);
       } catch (error) {
         setError(error.response?.data?.message || "Failed to fetch user");
@@ -71,7 +71,7 @@ const UserProfile = () => {
   useEffect(() => {
     const sathiLine = async () => {
       try {
-        const userResponse = await axios.get(`http://localhost:5000/profile/${loggedinId}`);
+        const userResponse = await axios.get(`https://messayo-backend.onrender.com/profile/${loggedinId}`);
 
         // Ensure setAafu always gets a valid object
         setAafu(userResponse.data || { friends: [], pendingRequests: [], receivedRequests: [] });
@@ -88,7 +88,7 @@ const UserProfile = () => {
     const fetchFriends = async () => {
       try {
         // Fetch current user's data to get the friends list
-        const userResponse = await axios.get(`http://localhost:5000/profile/${id}`);
+        const userResponse = await axios.get(`https://messayo-backend.onrender.com/profile/${id}`);
 
         if (!userResponse.data.friends) {
           setError("No friends found.");
@@ -97,7 +97,7 @@ const UserProfile = () => {
 
         // Fetch friends' details using their IDs
         const friendsResponse = await axios.post(
-          "http://localhost:5000/retrieveFriendsInfo",
+          "https://messayo-backend.onrender.com/retrieveFriendsInfo",
           {
             friendsList: userResponse.data.friends,
           }
@@ -120,7 +120,7 @@ const UserProfile = () => {
   const acceptFriendRequest = async (selfId, friendId) => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/acceptFriendRequest",
+        "https://messayo-backend.onrender.com/acceptFriendRequest",
         { selfId, friendId }
       );
       console.log(response.data.message);

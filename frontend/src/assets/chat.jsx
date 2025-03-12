@@ -93,7 +93,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
 
       try {
         const response = await axios.post(
-          "http://localhost:5000/message",
+          "https://messayo-backend.onrender.com/message",
           updatedMsg
         );
         setMsg((prevMsg) => [...prevMsg, response.data]);
@@ -125,7 +125,7 @@ export default function Chat({ user, msg, setMsg, userData }) {
 
       try {
         const response = await axios.post(
-          "http://localhost:5000/message",
+          "https://messayo-backend.onrender.com/message",
           updatedMsg
         );
         setMsg((prevMsg) => [...prevMsg, response.data]);
