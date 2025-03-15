@@ -19,7 +19,8 @@ const port=5000
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
-const URL = process.env.MONGODB_URI;
+// const URL = process.env.MONGODB_URI;
+const URL="mongodb://localhost:27017/Dokoto"
 app.use(express.json());
 app.use(cors());
 
@@ -421,6 +422,33 @@ mongoose
       const userData = await User.findOne({ userName: userName });
       res.send(userData);
     });
+
+    app.post("/findById", async (req, res) => {
+      const id = req.body.id;  // Extract the 'id' from the request body
+      
+      if (!id) {
+        return res.status(400).send({ message: "ID is required" });
+      }
+    
+      try {
+        // Use 'findById' to find the user by '_id'
+        const userData = await User.findById(id);
+    
+        // If user is not found, return a 404 response
+        if (!userData) {
+          return res.status(404).send({ message: "User not found" });
+        }
+    
+        // Send the found user data as response
+        res.send(userData);
+      } catch (error) {
+        // Handle errors (for example, invalid 'id' format or database issues)
+        console.error("Error finding user:", error);
+        res.status(500).send({ message: "Internal server error" });
+      }
+    });
+    
+
 
     // user profile display
     app.get("/profile/:id", async (req, res) => {
