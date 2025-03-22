@@ -37,7 +37,7 @@ export default function LandingPage() {
                 Welcome To Messayo
             </div>
             <div style={{position:'absolute',left:'45%',top:'50%',transition:'all 0.5s ease-in-out',opacity:start?'1':'0',zIndex:'10'}} onClick={()=>appear()}>
-                <div className="login-signup">Get Started</div>
+                <div className="login-signup" style={{cursor:'pointer'}}>Get Started</div>
             </div>
             <div style={{position:'absolute',left:'45%',top:'70%',display:'flex',zIndex:'10',transition:'all 0.5s ease-in-out',opacity:login&&userData?'1':'0'}}>
                 <Link to={'/message'}><div className="login-signup">Goto Messages</div></Link>

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import axios from "axios";
+import { FaCakeCandles } from "react-icons/fa6";
+
 
 const sendFriendRequest = async (selfId, friendId) => {
   try {
@@ -132,6 +134,10 @@ const UserProfile = () => {
       );
     }
   };
+  const formatDate=(dob)=> {
+    const date = new Date(dob);
+    return date.toLocaleDateString('en-US', { month: 'short', day: '2-digit', year: 'numeric' });
+}
 
   return (
     <div>
@@ -196,7 +202,8 @@ const UserProfile = () => {
           </div>
           <div style={{ display: 'flex', gap: '10px' }}><div style={{ color: '#FCBB15', fontWeight: 'bold' }}>{number}</div> Friends</div>
           <div style={{ color: '#FCBB15', fontWeight: 'bold' }}>{user.fullName}</div>
-          <div>{user._id}</div>
+          <div className="date-of-birth"><FaCakeCandles />
+          {formatDate(user.dob)}</div>
         </div>
       </div>
 

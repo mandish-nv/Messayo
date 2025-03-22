@@ -444,3 +444,15 @@ input{
   font-size: 1.5rem;
   border-radius: 1rem;
 }
+
+.date-of-birth{
+  color: white;
+  background-color: #FCBB15;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px #FCBB15 solid;
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
+}

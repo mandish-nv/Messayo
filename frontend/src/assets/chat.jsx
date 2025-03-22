@@ -88,6 +88,29 @@
           status: "sent",
         };
 
+        
+
+        try {
+          const response = await axios.post("http://localhost:5000/message", updatedMsg);
+          setMsg((prevMsg) => [...prevMsg, response.data]);
+
+          if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(updatedMsg)); // Send as JSON
+          }
+
+          setText(""); // Clear input
+        } catch (error) {
+          console.error("Error sending message:", error);
+        }
+      }
+      else if(fileName){
+        const updatedMsg = {
+          senderId: userData._id,
+          receiverId: user._id,
+          message: photoMsg,
+          msgType: "photo",
+          status: "sent",
+        };
         try {
           const response = await axios.post("http://localhost:5000/message", updatedMsg);
           setMsg((prevMsg) => [...prevMsg, response.data]);
