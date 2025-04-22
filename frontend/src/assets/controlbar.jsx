@@ -75,7 +75,7 @@ export default function Control({ value }) {
           className={`icon ${val === 6 ? "active" : ""}`}
           onClick={() => exit()}
         >
-          <IoExitOutline />
+         <Link to={'/'}> <IoExitOutline /></Link>
         </div>
       </div>
     </div>
