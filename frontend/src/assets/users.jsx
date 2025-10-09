@@ -8,15 +8,18 @@ import { BiSolidYinYang } from "react-icons/bi";
 
 export default function Users({ parameter }) {
   const [user, setUser] = useState(false);
-  if (parameter) {
-    axios.post('http://localhost:5000/findById', { id: parameter })
-      .then(response => {
-        setUser(response.data);  // Correctly set user data when the response is received
-      })
-      .catch(error => {
-        console.error("Error fetching user data:", error);
-      });
-  }
+  useEffect(()=>{
+
+    if (parameter) {
+      axios.post('http://localhost:5000/findById', { id: parameter })
+        .then(response => {
+          setUser(response.data);  // Correctly set user data when the response is received
+        })
+        .catch(error => {
+          console.error("Error fetching user data:", error);
+        });
+    }
+  },[])
   
   const userData =
     JSON.parse(localStorage.getItem("login")) ||
