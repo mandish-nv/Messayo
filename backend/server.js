@@ -1,6 +1,6 @@
 const express = require("express");
-const http = require('http');
-const WebSocket = require('ws');
+const http = require("http");
+const WebSocket = require("ws");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const User = require("./models/user");
@@ -9,49 +9,59 @@ const bodyParser = require("body-parser");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const dotenv = require("dotenv");
-const path=require("path")
+const path = require("path");
+
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+const url = require("url");
 dotenv.config();
 const algorithm = "aes-256-cbc";
 const key = Buffer.from(process.env.ENCRYPTION_KEY, "hex");
 // const port=process.env.PORT||5000
-const port=5000
+const port = 5000;
 
 const app = express();
 app.use(bodyParser.json({ limit: "10mb" }));
 app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" }));
 // const URL = process.env.MONGODB_URI;
-const URL="mongodb://localhost:27017/Dokoto"
+const URL = "mongodb://localhost:27017/Dokoto";
 app.use(express.json());
 app.use(cors());
 
-const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
-// WebSocket connection
-wss.on('connection', (ws) => {
-  console.log('Client connected');
+// const server = http.createServer(app);
+// const wss = new WebSocket.Server({ server });
+// // WebSocket connection
+// wss.on('connection', (ws) => {
+//   console.log('Client connected');
 
-  ws.on('message', (message) => {
-    console.log(`Received:`, message.toString()); // Convert Buffer to string
+//   ws.on('message', message => {
+//     console.log(`Received:`, message.toString()); // Convert Buffer to string
 
-    try {
-      const parsedMessage = message.toString(); 
-      // Broadcast the JSON string to all clients
-      wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify(parsedMessage)); 
-        }
-      });
+//     try {
+//       const parsedMessage = message.toString();
+//       // Broadcast the JSON string to all clients
+//       wss.clients.forEach(client => {
+//         if (client.readyState === WebSocket.OPEN) {
+//           client.send(JSON.stringify(parsedMessage));
+//         }
+//       });
 
-    } catch (error) {
-      console.error("Invalid JSON received:", message.toString());
-    }
-  });
+//     } catch (error) {
+//       console.error("Invalid JSON received:", message.toString());
+//     }
+//   });
 
+//   ws.on('close', () => {
+//     console.log('Client disconnected');
+//   });
+// });
 
-
-  ws.on('close', () => {
-    console.log('Client disconnected');
-  });
+const server = http.createServer(app); // ✅ Create server for Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*", // change to your frontend URL in production
+    methods: ["GET", "POST"],
+  },
 });
 
 mongoose
@@ -60,6 +70,18 @@ mongoose
     app.get("/", (req, res) => {
       res.send("Mongo Connected");
     });
+
+    io.on('connection',(socket)=>{
+      console.log('Socket Connected')
+
+      socket.on('message',(data)=>{
+        // console.log('Received message: ',data)
+        io.emit('message',data)
+      })
+      socket.on('disconnect',()=>{
+        console.log('Socket Disconnected')
+      })
+    })
 
     app.post("/findMessage", async (req, res) => {
       const id = req.body._id;
@@ -236,31 +258,32 @@ mongoose
       try {
         const query = req.query.query;
         const selfId = req.query.selfId;
-    
+
         if (!query || !selfId) {
-          return res.status(400).json({ message: "Search query and selfId are required" });
+          return res
+            .status(400)
+            .json({ message: "Search query and selfId are required" });
         }
-    
+
         // Fetch the logged-in user to get the friends list
         const currentUser = await User.findById(selfId).select("friends");
-    
+
         if (!currentUser) {
           return res.status(404).json({ message: "User not found" });
         }
-    
+
         // Search users based on fullName and ensure the user is in the friends list
         const users = await User.find({
           fullName: { $regex: query, $options: "i" }, // Case-insensitive search
           _id: { $in: currentUser.friends }, // Only users in the friends list
         }).select("_id userName fullName profilePicture");
-    
+
         res.status(200).json(users);
       } catch (error) {
         console.error("Error searching users:", error);
         res.status(500).json({ message: "Server error", error });
       }
     });
-    
 
     app.post("/acceptFriendRequest", async (req, res) => {
       try {
@@ -273,11 +296,9 @@ mongoose
         }
 
         if (selfId === friendId) {
-          return res
-            .status(400)
-            .json({
-              message: "You cannot accept a friend request from yourself",
-            });
+          return res.status(400).json({
+            message: "You cannot accept a friend request from yourself",
+          });
         }
 
         // Fetch both users
@@ -334,11 +355,9 @@ mongoose
         }
 
         if (selfId === friendId) {
-          return res
-            .status(400)
-            .json({
-              message: "You cannot reject a friend request from yourself",
-            });
+          return res.status(400).json({
+            message: "You cannot reject a friend request from yourself",
+          });
         }
 
         // Fetch both users
@@ -424,21 +443,21 @@ mongoose
     });
 
     app.post("/findById", async (req, res) => {
-      const id = req.body.id;  // Extract the 'id' from the request body
-      
+      const id = req.body.id; // Extract the 'id' from the request body
+
       if (!id) {
         return res.status(400).send({ message: "ID is required" });
       }
-    
+
       try {
         // Use 'findById' to find the user by '_id'
         const userData = await User.findById(id);
-    
+
         // If user is not found, return a 404 response
         if (!userData) {
           return res.status(404).send({ message: "User not found" });
         }
-    
+
         // Send the found user data as response
         res.send(userData);
       } catch (error) {
@@ -447,8 +466,6 @@ mongoose
         res.status(500).send({ message: "Internal server error" });
       }
     });
-    
-
 
     // user profile display
     app.get("/profile/:id", async (req, res) => {
@@ -605,11 +622,11 @@ mongoose
         res.status(500).send("Internal Server Error");
       }
     });
-    
+
     // Serve React frontend for all non-API routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
-});
+    app.get("*", (req, res) => {
+      res.sendFile(path.join(__dirname, "../frontend/build", "index.html"));
+    });
 
     server.listen(port, () => {
       console.log("Server Connected");
