@@ -134,7 +134,7 @@ export default function Chat({ user, userData }) {
       try {
         const response = await axios.post("http://localhost:5000/message", updatedMsg);
         socket.emit('message', response.data)
-        // setMsg((prevMsg) => [...prevMsg, response.data]);
+        setMsg((prevMsg) => [...prevMsg, response.data]);
 
         // if (socket && socket.readyState === WebSocket.OPEN) {
         //   socket.send(JSON.stringify(updatedMsg)); // Send as JSON
