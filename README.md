@@ -6,9 +6,9 @@ This project is an ambitious effort to design and implement a modern, secure, an
 
 * **Social Connectivity:** Includes robust features for fostering social interaction:
 
-- Friend Requests and connection management.
+  - Friend Requests and connection management.
 
-- Comprehensive User Profile Management to build and manage a digital presence.
+  - Comprehensive User Profile Management to build and manage a digital presence.
 
 * **User-Friendly Interface:** Designed to be intuitive and accessible across different devices, ensuring a seamless user experience.
 
